@@ -3,7 +3,10 @@ import React from "react";
 
 const Titles = () => {
     return ( 
-        <h1 > am the Titles </h1>
+        <div>
+            <h1 className="title-container__title">Find your wether</h1>
+            <h3 className="title-container__subtitle">Find out conditions and more</h3>
+        </div>
     )
 }
 

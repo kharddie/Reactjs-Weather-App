@@ -3,6 +3,8 @@ import Titles from "../components/Titles";
 import Form from "../components/Form";
 import Weather from "../components/Weather";
 
+
+
 require("babel-core/register");
 require("babel-polyfill");
 
@@ -57,16 +59,28 @@ class App extends React.Component {
     render() {
         return ( 
           <div>
-            <Titles/>
-            <Form getWeather={this.getWeather}/>
-            <Weather
-                 temperature={this.state.temperature}
-                 city={this.state.city}
-                 country={this.state.country}
-                 humidity={this.state.humidity}
-                 description={this.state.description}
-                 error={this.error}
-                 />
+            <div className="wrapper">
+                <div className="main">
+                    <div className="container">
+                        <div className="row">
+                            <div className="col-5 title-container">
+                                <Titles/>
+                            </div>   
+                            <div className="col-7 form-container">
+                            <Form getWeather={this.getWeather}/>
+                                <Weather
+                                    temperature={this.state.temperature}
+                                    city={this.state.city}
+                                    country={this.state.country}
+                                    humidity={this.state.humidity}
+                                    description={this.state.description}
+                                    error={this.error}
+                                    />
+                            </div>                       
+                        </div>
+                    </div>
+                </div>
+            </div>
           </div>
         );
       }
@@ -74,3 +88,7 @@ class App extends React.Component {
 };
 
 export default App;
+
+
+
+

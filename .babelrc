@@ -8,5 +8,6 @@
         "stage-0",
         "react"
     ],
-    "plugins": ["transform-regenerator"]
+    "plugins": ["transform-regenerator","transform-class-properties"]
 }
+

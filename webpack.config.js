@@ -28,8 +28,7 @@ module.exports = {
   },
 
   module: {
-    loaders: [
-      {
+    loaders: [{
         test: /\.jsx?$/,
         exclude: /(node_modules|bower_components)/,
         loader: 'babel-loader',
@@ -46,8 +45,11 @@ module.exports = {
       },
 
       {
-        test: /\.(png|jpg|svg)$/,
+        test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
         loader: "url-loader",
+        options: {
+          limit: 100000
+        }
       },
     ]
   },

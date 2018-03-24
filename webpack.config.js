@@ -15,6 +15,11 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
   context: PATHS.app,
 
+  entry: [
+    'react-hot-loader/patch',
+    './src/index.js'
+  ],
+
   entry: "./js/index.js",
   output: {
     path: PATHS.build,
@@ -27,6 +32,7 @@ module.exports = {
     port: 3000
   },
 
+  /*
   module: {
     loaders: [{
         test: /\.jsx?$/,
@@ -52,6 +58,36 @@ module.exports = {
         }
       },
     ]
+*/
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        query: {
+          presets: ['react', 'es2015', 'stage-0'],
+          plugins: ['react-html-attrs', 'transform-class-properties', 'transform-decorators-legacy'],
+        }
+      },
+      {
+        test: /\.css$/,
+        loaders: ["style-loader", "css-loader"],
+
+      },
+
+      {
+        test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+        exclude: /node_modules/,
+        loader: "url-loader",
+        options: {
+          limit: 100000
+        }
+      },
+    ]
+  },
+  resolve: {
+    extensions: ['*', '.js', '.jsx']
   },
 
   plugins: [
@@ -63,3 +99,5 @@ module.exports = {
 
   ],
 };
+
+

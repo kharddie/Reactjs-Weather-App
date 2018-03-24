@@ -1,13 +1,11 @@
 {
     "presets": [
-        ["env", {
-            "targets": {
-                "node": "current"
-            }
-        }],
-        "stage-0",
-        "react"
+        "env",
+        "react",
+        "stage-2"
     ],
-    "plugins": ["transform-regenerator","transform-class-properties"]
+    "plugins": [
+        "transform-regenerator",
+        "transform-class-properties"
+    ]
 }
-

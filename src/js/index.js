@@ -11,3 +11,5 @@ import App from "./App";
 const app = document.getElementById('app');
 
 ReactDOM.render( <App> </App>,app);
+
+module.hot.accept();

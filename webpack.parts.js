@@ -30,20 +30,7 @@ exports.devServer = ({
 /* goes through possible @import and url() lookups within the matched files and treats them as a regular ES2015 import
 style-loader injects the styling through a style element*/
 
-exports.loadCSS = ({
-    include,
-    exclude
-} = {}) => ({
-    module: {
-        rules: [{
-            test: /\.css$/,
-            include,
-            exclude,
 
-            use: ["style-loader", "css-loader"],
-        }, ],
-    },
-});
 
 //this is only for production
 exports.extractCSS = ({
@@ -103,31 +90,12 @@ exports.autoprefix = () => ({
     },
 });
 
-exports.loadImages = ({
-    include,
-    exclude,
-    options
-} = {}) => ({
-    module: {
-        rules: [{
-            test: /\.(png|jpg|svg)$/,
-            include,
-            exclude,
-            use: {
-                loader: "url-loader",
-                options,
-            },
-        }, ],
-    },
-});
 
 
 
+///////////////////////////////////////////////////////////////////
 
-exports.loadJavaScript = ({
-    include,
-    exclude
-} = {}) => ({
+exports.loadJavaScript = ({include,exclude} = {}) => ({
     module: {
         rules: [{
             test: /\.js$/,
@@ -141,6 +109,42 @@ exports.loadJavaScript = ({
         }, ],
     },
 });
+
+exports.loadCSS = ({include,exclude} = {}) => ({
+    module: {
+        rules: [{
+            test: /\.css$/,
+            include,
+            exclude,
+            use: ["style-loader", "css-loader"],
+        }, ],
+    },
+});
+
+exports.loadImages = ({include,exclude,options} = {}) => ({
+    module: {
+        rules: [{
+            test: /\.(png|jpg|svg)$/,
+            include,
+            exclude,
+            use: {
+                loader: "url-loader",
+                options,
+            },
+        }, ],
+    },
+});
+
+exports.setFreeVariable = (key, value) => {
+    const env = {};
+    env[key] = JSON.stringify(value);
+
+    return {
+        plugins: [new webpack.DefinePlugin(env)],
+    };
+};
+
+///////////////////////////////////////////////////////////////////
 
 exports.generateSourceMaps = ({
     type
@@ -173,14 +177,7 @@ exports.minifyCSS = ({
     ],
 });
 
-exports.setFreeVariable = (key, value) => {
-    const env = {};
-    env[key] = JSON.stringify(value);
 
-    return {
-        plugins: [new webpack.DefinePlugin(env)],
-    };
-};
 
 
 exports.attachRevision = () => ({

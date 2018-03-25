@@ -28,7 +28,6 @@ const commonConfig = merge([
         template: 'templates/index.template.ejs',
         inject: 'body',
       }),
-      new CleanWebpackPlugin(PATHS.build),
     ],
 
     entry: [
@@ -58,7 +57,12 @@ const commonConfig = merge([
 const productionConfig = merge(
   [
 
-   
+    {
+      plugins: [new CleanWebpackPlugin(PATHS.build),],
+      resolve: {
+        extensions: ['*', '.js', '.jsx']
+      },
+    },
 
 
   ]);

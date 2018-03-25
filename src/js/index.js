@@ -7,9 +7,8 @@ import "./App.css";
 
 import App from "./App";
 
-console.log(process.env.NODE_ENV);
-console.log(ENV);
-console.log(ENVPROD);
+console.log(process.env.NODE_ENV);//working
+console.log(ENVPROD);//working
 
 
 

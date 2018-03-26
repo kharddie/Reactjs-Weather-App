@@ -8,6 +8,10 @@ const UglifyWebpackPlugin = require("uglifyjs-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const cssnano = require("cssnano");
 const GitRevisionPlugin = require("git-revision-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+
+
 
 /**/
 
@@ -32,48 +36,6 @@ style-loader injects the styling through a style element*/
 
 
 
-//this is only for production
-exports.extractCSS = ({
-    include,
-    exclude,
-    use
-}) => {
-    // Output extracted CSS to a file
-    const plugin = new ExtractTextPlugin({
-        // `allChunks` is needed to extract from extracted chunks as well.
-        allChunks: true,
-        filename: "[name].[contenthash:8].css",
-
-    });
-
-    return {
-        module: {
-            rules: [{
-                test: /\.css$/,
-                include,
-                exclude,
-
-                use: plugin.extract({
-                    use,
-                    fallback: "style-loader",
-                }),
-            }, ],
-        },
-        plugins: [
-            plugin,
-            new OptimizeCssAssetsPlugin({
-                assetNameRegExp: /\.optimize\.css$/g,
-                cssProcessor: require('cssnano'),
-                cssProcessorOptions: {
-                    discardComments: {
-                        removeAll: true
-                    }
-                },
-                canPrint: true
-            })
-        ]
-    }
-};
 
 exports.purifyCSS = ({
     paths
@@ -95,33 +57,87 @@ exports.autoprefix = () => ({
 
 ///////////////////////////////////////////////////////////////////
 
-exports.loadJavaScript = ({include,exclude} = {}) => ({
+exports.loadJavaScript = ({ include, exclude } = {}) => ({
     module: {
         rules: [{
             test: /\.js$/,
             include,
-            exclude: /(node_modules|bower_components)/,
+            exclude: /node_modules/,
             loader: 'babel-loader',
             query: {
                 presets: ['react', 'es2015', 'stage-0'],
                 plugins: ['react-html-attrs', 'transform-class-properties', 'transform-decorators-legacy'],
             }
-        }, ],
+        },],
     },
 });
 
-exports.loadCSS = ({include,exclude} = {}) => ({
+exports.loadCSS = ({ include, exclude } = {}) => ({
     module: {
         rules: [{
             test: /\.css$/,
             include,
             exclude,
             use: ["style-loader", "css-loader"],
-        }, ],
+        },],
     },
 });
 
-exports.loadImages = ({include,exclude,options} = {}) => ({
+
+//this is only for production
+exports.extractCSS = ({ include, exclude, use }) => {
+    // Output extracted CSS to a file
+    const plugin = new ExtractTextPlugin({
+        // `allChunks` is needed to extract from extracted chunks as well.
+        allChunks: true,
+        filename: "[name].[contenthash:8].css",
+
+    });
+
+
+    return {
+        module: {
+            rules: [
+                {
+                    test: /\.css$/,
+                    include,
+                    exclude,
+
+                    use: plugin.extract({
+                        use,
+                        fallback: "style-loader",
+                    }),
+                },
+            ],
+        },
+        plugins: [
+            plugin,
+            new OptimizeCssAssetsPlugin({
+                assetNameRegExp: /\.optimize\.css$/g,
+                cssProcessor: require('cssnano'),
+                cssProcessorOptions: { discardComments: { removeAll: true } },
+                canPrint: true
+            })
+        ]
+    }
+};
+
+
+exports.miniCssExtract = ({ include, exclude, options } = {}) => ({
+module: {
+    rules: [
+        {
+            test: /\.css$/,
+            use: [
+              MiniCssExtractPlugin.loader,
+              "css-loader"
+            ]
+          }
+    ]
+  }
+});
+
+exports.loadImages = ({ include, exclude, options } = {}) => ({
     module: {
         rules: [{
             test: /\.(png|jpg|svg)$/,
@@ -131,7 +147,7 @@ exports.loadImages = ({include,exclude,options} = {}) => ({
                 loader: "url-loader",
                 options,
             },
-        }, ],
+        },],
     },
 });
 

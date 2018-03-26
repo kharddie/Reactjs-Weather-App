@@ -1,5 +1,6 @@
 //const debug = process.env.NODE_ENV !== "production"; //if developement
-//console.log("This is the Webpack 4 testing 'mode':" + process.env.NODE_ENV !== "production");
+console.log("This is the Webpack 4 testing 'mode':" + process.env.NODE_ENV !== "production");
+console.log("process.env.NODE_ENV:" + process.env.NODE_ENV);
 const webpack = require('webpack');
 const merge = require("webpack-merge");
 const path = require('path');
@@ -12,6 +13,7 @@ const PATHS = {
 const glob = require("glob");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const parts = require("./webpack.parts");
 
@@ -46,27 +48,73 @@ const commonConfig = merge([
   },
 
   parts.loadJavaScript({ include: PATHS.app }),
-  parts.loadCSS(),
   parts.loadImages(),
-  
+
 ]);
 
 
 
 //::::PRODUCTION::::
-const productionConfig = merge(
-  [
+const productionConfig = merge([
 
-    {
-      plugins: [new CleanWebpackPlugin(PATHS.build),],
-      resolve: {
-        extensions: ['*', '.js', '.jsx']
+  {
+    output: {
+      chunkFilename: "[name].[chunkhash:8].js",
+      filename: "[name].[chunkhash:8].js",
+      publicPath: "/reactjs/Reactjs-Weather-App/"
+    },
+    plugins: [
+      new webpack.NamedModulesPlugin(),
+      new CopyWebpackPlugin([
+        { from: PATHS.app + '/img', to: 'images' }
+      ]),
+
+    ],
+  },
+
+  parts.extractCSS({
+    use: [
+      {
+        loader: 'css-loader', options: { minimize: true },
+      },
+      parts.autoprefix()
+    ],
+  }),
+
+  parts.purifyCSS({
+    paths: glob.sync(`${PATHS.app}/**/*.js`, { nodir: true }),
+  }),
+
+  parts.loadImages({
+    options: {
+      limit: 15000,
+      name: "[name].[hash:8].[ext]",
+    },
+  }),
+  parts.generateSourceMaps({ type: "source-map" }),
+
+  {
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          commons: {
+            test: /[\\/]node_modules[\\/]/,
+            name: "vendor",
+            chunks: "all",
+          },
+        },
+      },
+      runtimeChunk: {
+        name: "manifest",
       },
     },
+    recordsPath: path.join(__dirname, "records.json"),
+  },
+  parts.clean(PATHS.build),
+  parts.attachRevision(),
+  parts.setFreeVariable("ENVPROD", "hello from PRODUCTION Config"),
 
-
-  ]);
-
+]);
 
 //::::DEVELPMENT::::
 const developmentConfig = merge(
@@ -76,18 +124,19 @@ const developmentConfig = merge(
       host: '127.0.0.1', // in this section, I have tried to change IP address by server IP
       port: 3000
     }),
-    parts.setFreeVariable("ENVPROD", "hello from production config"),
-
+    parts.setFreeVariable("ENVPROD", "hello from developm onfig"),
+    parts.loadCSS(),
   ]);
 
 
 
 
-module.exports = mode => {
+  module.exports = mode => {
+    process.env.BABEL_ENV = mode;
 
-  if (mode === "production") {
-    return merge(commonConfig, productionConfig, { mode });
-  }
+    if (mode === "production") {
+        return merge(commonConfig, productionConfig, { mode });
+    }
 
-  return merge(commonConfig, developmentConfig, { mode });
+    return merge(commonConfig, developmentConfig, { mode });
 };
